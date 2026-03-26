@@ -37,6 +37,34 @@ class EmprestimoRepository:
         finally:
             conn.close()
 
+    def listar_emprestimos_ativos(self):
+        """Retorna uma lista de todos os empréstimos ativos, fazendo JOIN com Usuarios e Livros_Fisicos."""
+        conn = get_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute('''
+                SELECT
+                    e.id_emprestimo,
+                    e.id_tombo,
+                    l.titulo_curto,
+                    e.id_usuario,
+                    u.nome as nome_usuario,
+                    e.data_retirada,
+                    e.data_devolucao_prevista
+                FROM Emprestimos e
+                JOIN Livros_Fisicos l ON e.id_tombo = l.id_tombo
+                JOIN Usuarios u ON e.id_usuario = u.id_usuario
+                WHERE e.status = 'Ativo'
+                ORDER BY e.data_devolucao_prevista ASC
+            ''')
+            emprestimos = cursor.fetchall()
+            return [dict(row) for row in emprestimos]
+        except Exception as e:
+            logging.error(f"Erro ao listar empréstimos ativos: {e}")
+            raise
+        finally:
+            conn.close()
+
     def devolver_emprestimo(self, id_emprestimo, data_devolucao_real):
         """Atualiza o empréstimo definindo a data de devolução real e alterando status para Devolvido."""
         conn = get_connection()

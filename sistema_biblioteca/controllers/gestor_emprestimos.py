@@ -83,6 +83,14 @@ class GestorEmprestimos:
         data_devolucao_prevista_br = data_devolucao_prevista.strftime('%d/%m/%Y')
         return True, data_devolucao_prevista_br
 
+    def obter_emprestimos_ativos(self):
+        """Retorna todos os empréstimos ativos."""
+        try:
+            return self.emprestimo_repo.listar_emprestimos_ativos()
+        except Exception as e:
+            logging.error(f"Erro no controller ao obter empréstimos ativos: {e}")
+            raise RuntimeError("Não foi possível carregar a lista de empréstimos ativos.")
+
     def registrar_devolucao(self, id_tombo):
         """
         Registra a devolução de um livro.
