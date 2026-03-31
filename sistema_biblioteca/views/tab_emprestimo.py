@@ -55,15 +55,38 @@ class TabEmprestimo(ctk.CTkFrame):
         # Configura as colunas para se expandirem
         self.frame_form.grid_columnconfigure(1, weight=1)
 
+        # Mapas internos para guardar o ID real correspondente ao texto selecionado
+        self.mapa_usuarios = {}
+        self.mapa_livros = {}
+
         # Carrega os dados para os ComboBoxes
         self.carregar_listas()
 
     def carregar_listas(self):
-        """Busca usuários e livros e popula os comboboxes."""
+        """Busca usuários e livros e popula os comboboxes (sem expor o ID no texto primário)."""
+        self.mapa_usuarios.clear()
+        self.mapa_livros.clear()
+
         try:
             # Usuarios
             usuarios = self.gestor.obter_usuarios()
-            lista_usuarios = [f"{u['nome']} (ID: {u['id_usuario']})" for u in usuarios]
+            lista_usuarios = []
+
+            # Controle para nomes duplicados (ex: dois "João Silva")
+            nomes_vistos = {}
+            for u in usuarios:
+                nome_base = u['nome']
+                if nome_base in nomes_vistos:
+                    nomes_vistos[nome_base] += 1
+                    # Se tiver duplicata, adiciona um sufixo numérico sutil só para diferenciar
+                    nome_exibicao = f"{nome_base} ({nomes_vistos[nome_base]})"
+                else:
+                    nomes_vistos[nome_base] = 1
+                    nome_exibicao = nome_base
+
+                lista_usuarios.append(nome_exibicao)
+                # Guarda o ID real no dicionário, atrelado ao nome exato do ComboBox
+                self.mapa_usuarios[nome_exibicao] = u['id_usuario']
 
             if lista_usuarios:
                 self.combo_usuario.configure(values=lista_usuarios)
@@ -74,7 +97,21 @@ class TabEmprestimo(ctk.CTkFrame):
 
             # Livros
             livros = self.gestor.obter_livros()
-            lista_livros = [f"{l['titulo_curto']} (Tombo: {l['id_tombo']})" for l in livros]
+            lista_livros = []
+
+            titulos_vistos = {}
+            for l in livros:
+                titulo_base = l['titulo_curto']
+                if titulo_base in titulos_vistos:
+                    titulos_vistos[titulo_base] += 1
+                    titulo_exibicao = f"{titulo_base} - Cópia {titulos_vistos[titulo_base]}"
+                else:
+                    titulos_vistos[titulo_base] = 1
+                    titulo_exibicao = titulo_base
+
+                lista_livros.append(titulo_exibicao)
+                # Guarda o Tombo real (ID numérico) no dicionário
+                self.mapa_livros[titulo_exibicao] = l['id_tombo']
 
             if lista_livros:
                 self.combo_livro.configure(values=lista_livros)
@@ -88,29 +125,14 @@ class TabEmprestimo(ctk.CTkFrame):
             self.label_feedback.configure(text=f"Erro ao carregar listas: {str(e)}", text_color="red")
             logging.error(f"Erro na interface ao carregar listas: {e}")
 
-    def extrair_id(self, string_combinada, tipo):
-        """
-        Extrai o ID da string formatada.
-        Usuário formato: "Nome (ID: XXX)"
-        Livro formato: "Titulo (Tombo: YYY)"
-        """
-        try:
-            if tipo == "usuario":
-                # Separa por "ID: " e pega o que vem depois até o ")"
-                return string_combinada.split("(ID: ")[1].split(")")[0]
-            elif tipo == "livro":
-                # Separa por "Tombo: " e pega o que vem depois até o ")"
-                return string_combinada.split("(Tombo: ")[1].split(")")[0]
-        except IndexError:
-            return ""
-
     def registrar_saida(self):
         usuario_selecionado = self.combo_usuario.get().strip()
         livro_selecionado = self.combo_livro.get().strip()
         dias = self.entry_dias.get().strip()
 
-        id_usuario = self.extrair_id(usuario_selecionado, "usuario")
-        id_tombo = self.extrair_id(livro_selecionado, "livro")
+        # Resgata os IDs reais usando os dicionários internos mapeados
+        id_usuario = self.mapa_usuarios.get(usuario_selecionado)
+        id_tombo = self.mapa_livros.get(livro_selecionado)
 
         if not id_usuario or not id_tombo:
             self.label_feedback.configure(text="Selecione um Usuário e um Livro válidos.", text_color="red")
