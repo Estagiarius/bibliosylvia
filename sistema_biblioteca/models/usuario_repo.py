@@ -2,18 +2,20 @@ import logging
 from database.db_config import get_connection
 
 class UsuarioRepository:
-    def adicionar(self, id_usuario, nome, tipo):
+    def adicionar(self, nome, tipo):
         conn = get_connection()
         try:
             cursor = conn.cursor()
             cursor.execute('''
-                INSERT INTO Usuarios (id_usuario, nome, tipo)
-                VALUES (?, ?, ?)
-            ''', (id_usuario, nome, tipo))
+                INSERT INTO Usuarios (nome, tipo)
+                VALUES (?, ?)
+            ''', (nome, tipo))
             conn.commit()
-            logging.info(f"Usuário {id_usuario} ({nome}) inserido com sucesso no banco de dados.")
+            id_gerado = cursor.lastrowid
+            logging.info(f"Usuário {id_gerado} ({nome}) inserido com sucesso no banco de dados.")
+            return id_gerado
         except Exception as e:
-            logging.error(f"Erro ao inserir usuário {id_usuario}: {e}")
+            logging.error(f"Erro ao inserir usuário {nome}: {e}")
             conn.rollback()
             raise
         finally:

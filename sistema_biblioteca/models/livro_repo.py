@@ -2,18 +2,20 @@ import logging
 from database.db_config import get_connection
 
 class LivroRepository:
-    def adicionar(self, id_tombo, titulo_curto):
+    def adicionar(self, titulo_curto):
         conn = get_connection()
         try:
             cursor = conn.cursor()
             cursor.execute('''
-                INSERT INTO Livros_Fisicos (id_tombo, titulo_curto)
-                VALUES (?, ?)
-            ''', (id_tombo, titulo_curto))
+                INSERT INTO Livros_Fisicos (titulo_curto)
+                VALUES (?)
+            ''', (titulo_curto,))
             conn.commit()
-            logging.info(f"Livro físico {id_tombo} ({titulo_curto}) inserido com sucesso no banco de dados.")
+            id_gerado = cursor.lastrowid
+            logging.info(f"Livro físico {id_gerado} ({titulo_curto}) inserido com sucesso no banco de dados.")
+            return id_gerado
         except Exception as e:
-            logging.error(f"Erro ao inserir livro {id_tombo}: {e}")
+            logging.error(f"Erro ao inserir livro {titulo_curto}: {e}")
             conn.rollback()
             raise
         finally:

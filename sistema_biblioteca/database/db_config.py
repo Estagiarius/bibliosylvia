@@ -29,7 +29,7 @@ def init_db():
         # Tabela Usuarios
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS Usuarios (
-                id_usuario TEXT PRIMARY KEY,
+                id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
                 nome TEXT NOT NULL,
                 tipo TEXT NOT NULL
             )
@@ -38,7 +38,7 @@ def init_db():
         # Tabela Livros_Fisicos
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS Livros_Fisicos (
-                id_tombo TEXT PRIMARY KEY,
+                id_tombo INTEGER PRIMARY KEY AUTOINCREMENT,
                 titulo_curto TEXT NOT NULL
             )
         ''')
@@ -47,8 +47,8 @@ def init_db():
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS Emprestimos (
                 id_emprestimo INTEGER PRIMARY KEY AUTOINCREMENT,
-                id_usuario TEXT NOT NULL,
-                id_tombo TEXT NOT NULL,
+                id_usuario INTEGER NOT NULL,
+                id_tombo INTEGER NOT NULL,
                 data_retirada DATE NOT NULL,
                 data_devolucao_prevista DATE NOT NULL,
                 data_devolucao_real DATE NULL,

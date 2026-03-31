@@ -17,10 +17,7 @@ class TabCadastros(ctk.CTkFrame):
         self.label_titulo_usu = ctk.CTkLabel(self.frame_usuario, text="Cadastrar Usuário", font=("Arial", 16, "bold"))
         self.label_titulo_usu.pack(pady=10)
 
-        # Campos
-        self.entry_id_usuario = ctk.CTkEntry(self.frame_usuario, placeholder_text="ID Usuário (Ex: MAT-123)")
-        self.entry_id_usuario.pack(pady=10, padx=20, fill="x")
-
+        # Campos (ID automático)
         self.entry_nome_usuario = ctk.CTkEntry(self.frame_usuario, placeholder_text="Nome Completo")
         self.entry_nome_usuario.pack(pady=10, padx=20, fill="x")
 
@@ -41,10 +38,7 @@ class TabCadastros(ctk.CTkFrame):
         self.label_titulo_livro = ctk.CTkLabel(self.frame_livro, text="Cadastrar Livro Físico", font=("Arial", 16, "bold"))
         self.label_titulo_livro.pack(pady=10)
 
-        # Campos
-        self.entry_id_tombo = ctk.CTkEntry(self.frame_livro, placeholder_text="ID do Tombo (Ex: LIV-001)")
-        self.entry_id_tombo.pack(pady=10, padx=20, fill="x")
-
+        # Campos (ID automático)
         self.entry_titulo_curto = ctk.CTkEntry(self.frame_livro, placeholder_text="Título Curto (Ex: Dom Casmurro)")
         self.entry_titulo_curto.pack(pady=10, padx=20, fill="x")
 
@@ -55,27 +49,23 @@ class TabCadastros(ctk.CTkFrame):
         self.label_feedback_livro.pack(pady=5)
 
     def cadastrar_usuario(self):
-        id_usuario = self.entry_id_usuario.get().strip()
         nome = self.entry_nome_usuario.get().strip()
         tipo = self.combo_tipo.get().strip()
 
         try:
-            self.gestor.cadastrar_usuario(id_usuario, nome, tipo)
-            self.label_feedback_usu.configure(text=f"Usuário {nome} cadastrado!", text_color="green")
-            self.entry_id_usuario.delete(0, 'end')
+            id_gerado = self.gestor.cadastrar_usuario(nome, tipo)
+            self.label_feedback_usu.configure(text=f"Usuário {nome} cadastrado com ID {id_gerado}!", text_color="green")
             self.entry_nome_usuario.delete(0, 'end')
         except Exception as e:
             self.label_feedback_usu.configure(text=f"Erro: {str(e)}", text_color="red")
             logging.error(f"Erro na interface de cadastro de usuário: {e}")
 
     def cadastrar_livro(self):
-        id_tombo = self.entry_id_tombo.get().strip()
         titulo = self.entry_titulo_curto.get().strip()
 
         try:
-            self.gestor.cadastrar_livro(id_tombo, titulo)
-            self.label_feedback_livro.configure(text=f"Livro {titulo} cadastrado!", text_color="green")
-            self.entry_id_tombo.delete(0, 'end')
+            id_gerado = self.gestor.cadastrar_livro(titulo)
+            self.label_feedback_livro.configure(text=f"Livro {titulo} cadastrado com Tombo {id_gerado}!", text_color="green")
             self.entry_titulo_curto.delete(0, 'end')
         except Exception as e:
             self.label_feedback_livro.configure(text=f"Erro: {str(e)}", text_color="red")

@@ -12,29 +12,21 @@ class GestorEmprestimos:
         self.livro_repo = LivroRepository()
         self.emprestimo_repo = EmprestimoRepository()
 
-    def cadastrar_usuario(self, id_usuario, nome, tipo):
-        """Registra um novo usuário no sistema."""
-        if not id_usuario or not nome or not tipo:
-            raise ValueError("Todos os campos de usuário são obrigatórios.")
+    def cadastrar_usuario(self, nome, tipo):
+        """Registra um novo usuário no sistema (ID é automático)."""
+        if not nome or not tipo:
+            raise ValueError("O nome e o tipo do usuário são obrigatórios.")
 
-        # Verificar se usuário já existe
-        if self.usuario_repo.buscar_por_id(id_usuario):
-            raise ValueError(f"O usuário com ID {id_usuario} já existe.")
+        id_gerado = self.usuario_repo.adicionar(nome, tipo)
+        return id_gerado
 
-        self.usuario_repo.adicionar(id_usuario, nome, tipo)
-        return True
+    def cadastrar_livro(self, titulo_curto):
+        """Registra um novo livro físico no sistema (ID é automático)."""
+        if not titulo_curto:
+            raise ValueError("O título do livro é obrigatório.")
 
-    def cadastrar_livro(self, id_tombo, titulo_curto):
-        """Registra um novo livro físico no sistema."""
-        if not id_tombo or not titulo_curto:
-            raise ValueError("Todos os campos do livro são obrigatórios.")
-
-        # Verificar se livro já existe
-        if self.livro_repo.buscar_por_id(id_tombo):
-            raise ValueError(f"O livro com o tombo {id_tombo} já existe.")
-
-        self.livro_repo.adicionar(id_tombo, titulo_curto)
-        return True
+        id_gerado = self.livro_repo.adicionar(titulo_curto)
+        return id_gerado
 
     def registrar_emprestimo(self, id_usuario, id_tombo, dias_emprestimo):
         """
