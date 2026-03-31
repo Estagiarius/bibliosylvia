@@ -75,7 +75,7 @@ class TabEmprestimo(ctk.CTkFrame):
             # Controle para nomes duplicados (ex: dois "João Silva")
             nomes_vistos = {}
             for u in usuarios:
-                nome_base = u['nome']
+                nome_base = u['nome'].strip()
                 if nome_base in nomes_vistos:
                     nomes_vistos[nome_base] += 1
                     # Se tiver duplicata, adiciona um sufixo numérico sutil só para diferenciar
@@ -101,7 +101,7 @@ class TabEmprestimo(ctk.CTkFrame):
 
             titulos_vistos = {}
             for l in livros:
-                titulo_base = l['titulo_curto']
+                titulo_base = l['titulo_curto'].strip()
                 if titulo_base in titulos_vistos:
                     titulos_vistos[titulo_base] += 1
                     titulo_exibicao = f"{titulo_base} - Cópia {titulos_vistos[titulo_base]}"
