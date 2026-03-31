@@ -19,6 +19,19 @@ class LivroRepository:
         finally:
             conn.close()
 
+    def listar_todos(self):
+        conn = get_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute('SELECT id_tombo, titulo_curto FROM Livros_Fisicos ORDER BY titulo_curto ASC')
+            livros = cursor.fetchall()
+            return [dict(row) for row in livros]
+        except Exception as e:
+            logging.error(f"Erro ao listar todos os livros: {e}")
+            raise
+        finally:
+            conn.close()
+
     def buscar_por_id(self, id_tombo):
         conn = get_connection()
         try:

@@ -19,6 +19,19 @@ class UsuarioRepository:
         finally:
             conn.close()
 
+    def listar_todos(self):
+        conn = get_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute('SELECT id_usuario, nome, tipo FROM Usuarios ORDER BY nome ASC')
+            usuarios = cursor.fetchall()
+            return [dict(row) for row in usuarios]
+        except Exception as e:
+            logging.error(f"Erro ao listar todos os usuários: {e}")
+            raise
+        finally:
+            conn.close()
+
     def buscar_por_id(self, id_usuario):
         conn = get_connection()
         try:

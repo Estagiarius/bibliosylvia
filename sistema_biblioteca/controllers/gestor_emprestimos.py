@@ -83,6 +83,22 @@ class GestorEmprestimos:
         data_devolucao_prevista_br = data_devolucao_prevista.strftime('%d/%m/%Y')
         return True, data_devolucao_prevista_br
 
+    def obter_usuarios(self):
+        """Retorna todos os usuários cadastrados."""
+        try:
+            return self.usuario_repo.listar_todos()
+        except Exception as e:
+            logging.error(f"Erro no controller ao listar usuários: {e}")
+            raise RuntimeError("Falha ao buscar usuários.")
+
+    def obter_livros(self):
+        """Retorna todos os livros cadastrados."""
+        try:
+            return self.livro_repo.listar_todos()
+        except Exception as e:
+            logging.error(f"Erro no controller ao listar livros: {e}")
+            raise RuntimeError("Falha ao buscar livros.")
+
     def obter_emprestimos_ativos(self):
         """Retorna todos os empréstimos ativos."""
         try:
